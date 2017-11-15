@@ -1,7 +1,7 @@
 
 import numpy as np
 
-class Layer:
+class Layer(object):
     def __init__(self, n_nodes):
         self.n_inputs = 0
         self.n_nodes = n_nodes
@@ -27,5 +27,5 @@ class FullSigmoidLayer(Layer):
         return 1 / (1 + np.exp(-x))
 
     def forward(self, X):
-        a = np.transpose(self.W).dot(X)
+        a = X.dot(self.W)
         return self.sigmoid(a)
