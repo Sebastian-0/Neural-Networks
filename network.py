@@ -20,7 +20,6 @@ class Network:
         for l in self.layers[1:]:
             l.init_weights(size)
             size = l.n_nodes
-        self.loss.init_weights(size)
 
     def train(self, X, D, epochs):
         N = X.shape[1]
@@ -35,7 +34,11 @@ class Network:
             L = self.loss.loss(out, D)
             print(L)
 
-            self.loss.backward(out, D)
+            dLdy = self.loss.backward(out, D)
+            print(dLdy)
+
+            dLdh = self.layers[-1].backward(dLdy)
+            print(dLdh)
 
         # TODO here!!!
 

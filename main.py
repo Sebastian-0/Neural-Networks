@@ -6,8 +6,8 @@ from network import *
 
 
 X = np.array([1, 2, 3, 4,
-              4, 3, 2, 1]).reshape((2,4))
-D = np.array([1, 2]).reshape(2, 1)
+              4, 3, 2, 1]).reshape((2, 4))
+D = np.array([1, 2, 1, 2]).reshape(2, 2)
 print(X.shape)
 
 # l = FullSigmoidLayer(3)
@@ -19,6 +19,7 @@ print(X.shape)
 
 network = Network()
 network.add_layer(FullSigmoidLayer(3))
-network.set_loss(Loss(2))
+network.add_layer(FullSigmoidLayer(2))
+network.set_loss(MeanSquareLoss())
 
 network.train(X, D, 1)
