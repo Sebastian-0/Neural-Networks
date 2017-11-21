@@ -8,11 +8,13 @@ class Layer(object):
         self.W = np.zeros((1, 1))   # Weight matrix
         self.X = None               # Previous input
         self.A = None               # Previous activation
+        self.weight_updater = None
 
-    def init_weights(self, n_inputs):
+    def init_weights(self, n_inputs, weight_updater):
         self.n_inputs = n_inputs
+        self.weight_updater = weight_updater
         bound = 1/np.sqrt(n_inputs)  # Init with random weights, [-1 / sqrt(n), 1 / sqrt(n)]
-        # self.W = np.ones((self.n_inputs, self.n_nodes)) #np.random.rand(self.n_inputs, self.n_nodes) * bound * 2 - bound
+        # self.W = np.ones((self.n_inputs, self.n_nodes))
         self.W = np.random.rand(self.n_inputs, self.n_nodes) * bound * 2 - bound
 
     def forward(self, X):
@@ -20,9 +22,6 @@ class Layer(object):
 
     def backward(self, dLdy):
         raise NotImplementedError
-
-    def update_weights(self, delta):  # delta is the derivative of loss w. respect to W
-        pass
 
 
 class FullSigmoidLayer(Layer):
@@ -48,14 +47,6 @@ class FullSigmoidLayer(Layer):
 
     def backward(self, dLdy):
         dLdh = (dLdy*self.sigmoidDelta(self.A)).dot(np.transpose(self.W))
+        dLdW = np.transpose(self.X).dot(dLdy*self.A)
+        self.weight_updater.update(self.W, dLdW)
         return dLdh
-
-        # dydx = np.transpose(np.tile(self.activation, (X.shape[1], 1)))
-        # dLdX = dLdy.dot(dydx)
-        #
-        # delta = self.activation  # self.sigmoidDelta(self.activation)
-        # print(delta)
-        # dydw = np.transpose(self.input).dot(delta)
-        #
-        # self.update_weights(dLdy * dydw)
-        # print(dLdy * dydw)

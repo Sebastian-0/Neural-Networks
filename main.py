@@ -3,6 +3,7 @@ import numpy as np
 from layer import *
 from loss import *
 from network import *
+from weight_updater import *
 
 
 X = np.array([1, 2, 3, 4,
@@ -21,5 +22,6 @@ network = Network()
 network.add_layer(FullSigmoidLayer(3))
 network.add_layer(FullSigmoidLayer(2))
 network.set_loss(MeanSquareLoss())
+network.set_weight_updater(SGDUpdater())
 
-network.train(X, D, 1)
+network.train(X, D, 1000)

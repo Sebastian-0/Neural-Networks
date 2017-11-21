@@ -13,7 +13,8 @@ class Loss(object):
 class MeanSquareLoss(Loss):
     def loss(self, Y, D):
         N = Y.shape[0]
-        error = 1 / N * np.transpose(D - Y).dot(D - Y)
+        delta = D - Y
+        error = 1 / N * np.sum(delta * delta)
         return error
 
     def backward(self, Y, D):
