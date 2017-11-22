@@ -1,9 +1,8 @@
-import numpy as np
+from feedforward.loss import *
+from feedforward.network import *
+from feedforward.weight_updater import *
 
-from layer import *
-from loss import *
-from network import *
-from weight_updater import *
+from feedforward.layer import *
 
 # X = np.array([1, 2, 3, 4]).reshape((1, 4))
 # D = np.array([1, 2]).reshape(1, 2)
@@ -28,11 +27,11 @@ print(X.shape)
 
 network = Network()
 network.add_layer(FullSigmoidLayer(3))
-network.add_layer(FullLinearLayer(2))
+network.add_layer(FullSigmoidLayer(2))
 network.set_loss(MeanSquareLoss())
 network.set_weight_updater(SGDUpdater())
 
-network.train(X, D, 100)
+network.train(X, D, 1000)
 
 exit(0)
 

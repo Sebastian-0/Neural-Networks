@@ -1,9 +1,5 @@
-
-import numpy as np
-from layer import Layer
-from loss import Loss
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 class Network:
     def __init__(self):
@@ -33,15 +29,19 @@ class Network:
 
         losses = []
         for iter in range(0, epochs):
+            # Select samples
+            # TODO Batching somehow breaks everything
+            Xb, Db = X, D  # self.weight_updater.select_samples(X, D)
+
             # Forward propagation
-            out = X
+            out = Xb
             for l in self.layers:
                 out = l.forward(out)
 
-            L = self.loss.loss(out, D)
-            losses.append(L)
+            losses.append(self.loss_for(X, D))
 
-            dLdy = self.loss.backward(out, D)
+            # Backwards propagation
+            dLdy = self.loss.backward(out, Db)
             for l in reversed(self.layers):
                 dLdy = l.backward(dLdy)
 
@@ -50,3 +50,10 @@ class Network:
         plt.show()
         # TODO Display loss as graph?
 
+    def loss_for(self, X, D):
+        # Forward propagation
+        out = X
+        for l in self.layers:
+            out = l.forward(out)
+
+        return self.loss.loss(out, D)
