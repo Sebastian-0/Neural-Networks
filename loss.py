@@ -24,7 +24,7 @@ class MeanSquareLoss(Loss):
         # D = np.array([5, 10, 10, 5]).reshape((2, 2))
 
         P = Y.shape[0]
-        dLdy = 2 / P * (D - Y)
+        dLdy = -2 / P * (D - Y)
         return dLdy
 
 

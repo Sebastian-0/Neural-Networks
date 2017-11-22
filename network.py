@@ -45,6 +45,7 @@ class Network:
             for l in reversed(self.layers):
                 dLdy = l.backward(dLdy)
 
+        plt.axis([0, epochs, 0, max(losses)])
         plt.plot(np.arange(epochs), losses)
         plt.show()
         # TODO Display loss as graph?

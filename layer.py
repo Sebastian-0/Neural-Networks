@@ -47,6 +47,22 @@ class FullSigmoidLayer(Layer):
 
     def backward(self, dLdy):
         dLdh = (dLdy*self.sigmoidDelta(self.A)).dot(np.transpose(self.W))
-        dLdW = np.transpose(self.X).dot(dLdy*self.A)
+        dLdW = np.transpose(self.X).dot(dLdy*self.sigmoidDelta(self.A))
+        self.weight_updater.update(self.W, dLdW)
+        return dLdh
+
+
+class FullLinearLayer(Layer):
+    def __init__(self, n_nodes):
+        super(FullLinearLayer, self).__init__(n_nodes)
+
+    def forward(self, X):
+        self.X = X
+        self.A = X.dot(self.W)
+        return self.A
+
+    def backward(self, dLdy):
+        dLdh = (dLdy).dot(np.transpose(self.W))
+        dLdW = np.transpose(self.X).dot(dLdy)
         self.weight_updater.update(self.W, dLdW)
         return dLdh
