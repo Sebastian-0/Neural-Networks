@@ -2,7 +2,7 @@
 import numpy as np
 
 class WeightUpdater(object):
-    def update(self, W, dLdW):
+    def update(self, W, dLdW, dLdb):
         raise NotImplementedError
 
 
@@ -11,8 +11,9 @@ class SGDUpdater(WeightUpdater):
         self.learning_rate = 0.01
         self.batch_size = 50
 
-    def update(self, W, dLdW):
+    def update(self, W, b, dLdW, dLdb):
         W -= self.learning_rate * dLdW
+        b -= self.learning_rate * dLdb
 
     def select_samples(self, X, D):
         N = X.shape[0]

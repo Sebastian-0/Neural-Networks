@@ -50,8 +50,8 @@ class FullSigmoidLayer(Layer):
     def backward(self, dLdy):
         dLdh = (dLdy*self.sigmoidDelta(self.A)).dot(np.transpose(self.W))
         dLdW = np.transpose(self.X).dot(dLdy*self.sigmoidDelta(self.A))
-        dLdb = dLdy*self.sigmoidDelta(self.A)  # TODO was here with bias
-        self.weight_updater.update(self.W, dLdW)
+        dLdb = np.sum(dLdy*self.sigmoidDelta(self.A), axis=0)  # TODO was here with bias
+        self.weight_updater.update(self.W, self.b, dLdW, dLdb)
         return dLdh
 
 
@@ -61,11 +61,12 @@ class FullLinearLayer(Layer):
 
     def forward(self, X):
         self.X = X
-        self.A = X.dot(self.W)
+        self.A = X.dot(self.W) + self.b
         return self.A
 
     def backward(self, dLdy):
         dLdh = (dLdy).dot(np.transpose(self.W))
         dLdW = np.transpose(self.X).dot(dLdy)
-        self.weight_updater.update(self.W, dLdW)
+        dLdb = np.sum(dLdy, axis=0)
+        self.weight_updater.update(self.W, self.b, dLdW, dLdb)
         return dLdh

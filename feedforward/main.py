@@ -8,7 +8,6 @@ from feedforward.layer import *
 # x = np.array([1, 2, 3, 4])
 # print(np.repeat(x[np.newaxis, :], 2, axis=0))
 
-
 # X = np.array([1, 2, 3, 4]).reshape((1, 4))
 # D = np.array([1, 2]).reshape(1, 2)
 
@@ -40,7 +39,7 @@ print(X.shape)
 # print(loss.loss(X, D))
 
 network = Network()
-# network.add_layer(FullSigmoidLayer(3))
+network.add_layer(FullSigmoidLayer(3))
 network.add_layer(FullLinearLayer(1))
 network.set_loss(MeanSquareLoss())
 network.set_weight_updater(SGDUpdater())
