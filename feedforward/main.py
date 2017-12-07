@@ -4,18 +4,32 @@ from feedforward.weight_updater import *
 
 from feedforward.layer import *
 
+# Efficient repeat
+# x = np.array([1, 2, 3, 4])
+# print(np.repeat(x[np.newaxis, :], 2, axis=0))
+
+
 # X = np.array([1, 2, 3, 4]).reshape((1, 4))
 # D = np.array([1, 2]).reshape(1, 2)
 
-X = np.array([1, 2, 3, 4,
-              4, 3, 2, 1]).reshape((2, 4))
-D = np.array([1, 2,
-              1, 2]).reshape(2, 2)
+# X = np.array([1, 2, 3, 4,
+#               4, 3, 2, 1]).reshape((2, 4))
+# D = np.array([1, 2,
+#               1, 2]).reshape(2, 2)
+
+# y = (x1 + x2)/2 curve
 # X = np.array([0, 0,
 #               1, 1,
 #               2, 2,
 #               3, 3]).reshape((4, 2))
 # D = np.array([0, 1, 2, 3]).reshape(4, 1)
+
+# y = 2x + 5 curve
+X = np.array([0,
+              1,
+              2,
+              3]).reshape((4, 1))
+D = np.array([5, 7, 9, 11]).reshape(4, 1)
 print(X.shape)
 
 # l = FullSigmoidLayer(3)
@@ -26,8 +40,8 @@ print(X.shape)
 # print(loss.loss(X, D))
 
 network = Network()
-network.add_layer(FullSigmoidLayer(3))
-network.add_layer(FullSigmoidLayer(2))
+# network.add_layer(FullSigmoidLayer(3))
+network.add_layer(FullLinearLayer(1))
 network.set_loss(MeanSquareLoss())
 network.set_weight_updater(SGDUpdater())
 

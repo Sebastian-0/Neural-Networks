@@ -28,10 +28,11 @@ class Network:
         self.init(N)
 
         losses = []
-        for iter in range(0, epochs):
+        for iter in range(epochs):
             # Select samples
             # TODO Batching somehow breaks everything
-            Xb, Db = X, D  # self.weight_updater.select_samples(X, D)
+            # Xb, Db = self.weight_updater.select_samples(X, D)
+            Xb, Db = X, D
 
             # Forward propagation
             out = Xb

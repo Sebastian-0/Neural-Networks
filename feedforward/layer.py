@@ -6,6 +6,7 @@ class Layer(object):
         self.n_inputs = 0
         self.n_nodes = n_nodes
         self.W = np.zeros((1, 1))   # Weight matrix
+        self.b = np.zeros((1, 1))   # Bias weights
         self.X = None               # Previous input
         self.A = None               # Previous activation
         self.weight_updater = None
@@ -16,6 +17,7 @@ class Layer(object):
         bound = 1/np.sqrt(n_inputs)  # Init with random weights, [-1 / sqrt(n), 1 / sqrt(n)]
         # self.W = np.ones((self.n_inputs, self.n_nodes))
         self.W = np.random.rand(self.n_inputs, self.n_nodes) * bound * 2 - bound
+        self.b = np.random.rand(1, self.n_nodes) * bound * 2 - bound
 
     def forward(self, X):
         raise NotImplementedError
@@ -42,12 +44,13 @@ class FullSigmoidLayer(Layer):
         # self.W = np.array([1, 2, 3, 4, 5, 6]).reshape((3, 2))
 
         self.X = X
-        self.A = X.dot(self.W)
+        self.A = X.dot(self.W) + self.b
         return self.sigmoid(self.A)
 
     def backward(self, dLdy):
         dLdh = (dLdy*self.sigmoidDelta(self.A)).dot(np.transpose(self.W))
         dLdW = np.transpose(self.X).dot(dLdy*self.sigmoidDelta(self.A))
+        dLdb = dLdy*self.sigmoidDelta(self.A)  # TODO was here with bias
         self.weight_updater.update(self.W, dLdW)
         return dLdh
 
