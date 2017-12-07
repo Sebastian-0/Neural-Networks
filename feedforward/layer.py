@@ -26,47 +26,47 @@ class Layer(object):
         raise NotImplementedError
 
 
-class FullSigmoidLayer(Layer):
+class FullLayer(Layer):
+    def __init__(self, n_nodes):
+        super(FullLayer, self).__init__(n_nodes)
+
+    def activation(self, x):
+        raise NotImplementedError
+
+    def activationDelta(self, x):
+        raise NotImplementedError
+
+    def forward(self, X):
+        self.X = X
+        self.A = X.dot(self.W) + self.b
+        return self.activation(self.A)
+
+    def backward(self, dLdy):
+        dLdh = (dLdy*self.activationDelta(self.A)).dot(np.transpose(self.W))
+        dLdW = np.transpose(self.X).dot(dLdy*self.activationDelta(self.A))
+        dLdb = np.sum(dLdy*self.activationDelta(self.A), axis=0)  # TODO was here with bias
+        self.weight_updater.update(self.W, self.b, dLdW, dLdb)
+        return dLdh
+
+
+class FullSigmoidLayer(FullLayer):
     def __init__(self, n_nodes):
         super(FullSigmoidLayer, self).__init__(n_nodes)
 
-    def sigmoid(self, x):
+    def activation(self, x):
         return 1 / (1 + np.exp(-x))
 
-    def sigmoidDelta(self, x):
-        s = self.sigmoid(x)
+    def activationDelta(self, x):
+        s = self.activation(x)
         return s * (1 - s)
 
-    def forward(self, X):
-        # X = np.array([1, 2, 3]).reshape((1, 3))
-        # self.W = np.array([1, 2, 3, 4, 5, 6]).reshape((3, 2))
-        # X = np.array([1, 2, 3, 3, 2, 1]).reshape((2, 3))
-        # self.W = np.array([1, 2, 3, 4, 5, 6]).reshape((3, 2))
 
-        self.X = X
-        self.A = X.dot(self.W) + self.b
-        return self.sigmoid(self.A)
-
-    def backward(self, dLdy):
-        dLdh = (dLdy*self.sigmoidDelta(self.A)).dot(np.transpose(self.W))
-        dLdW = np.transpose(self.X).dot(dLdy*self.sigmoidDelta(self.A))
-        dLdb = np.sum(dLdy*self.sigmoidDelta(self.A), axis=0)  # TODO was here with bias
-        self.weight_updater.update(self.W, self.b, dLdW, dLdb)
-        return dLdh
-
-
-class FullLinearLayer(Layer):
+class FullLinearLayer(FullLayer):
     def __init__(self, n_nodes):
         super(FullLinearLayer, self).__init__(n_nodes)
 
-    def forward(self, X):
-        self.X = X
-        self.A = X.dot(self.W) + self.b
-        return self.A
+    def activation(self, x):
+        return x
 
-    def backward(self, dLdy):
-        dLdh = (dLdy).dot(np.transpose(self.W))
-        dLdW = np.transpose(self.X).dot(dLdy)
-        dLdb = np.sum(dLdy, axis=0)
-        self.weight_updater.update(self.W, self.b, dLdW, dLdb)
-        return dLdh
+    def activationDelta(self, x):
+        return np.ones(x.shape)

@@ -17,18 +17,18 @@ from feedforward.layer import *
 #               1, 2]).reshape(2, 2)
 
 # y = (x1 + x2)/2 curve
-# X = np.array([0, 0,
-#               1, 1,
-#               2, 2,
-#               3, 3]).reshape((4, 2))
-# D = np.array([0, 1, 2, 3]).reshape(4, 1)
+X = np.array([0, 0,
+              1, 1,
+              2, 2,
+              3, 3]).reshape((4, 2))
+D = np.array([0, 1, 2, 3]).reshape(4, 1)
 
 # y = 2x + 5 curve
-X = np.array([0,
-              1,
-              2,
-              3]).reshape((4, 1))
-D = np.array([5, 7, 9, 11]).reshape(4, 1)
+# X = np.array([0,
+#               1,
+#               2,
+#               3]).reshape((4, 1))
+# D = np.array([5, 7, 9, 11]).reshape(4, 1)
 print(X.shape)
 
 # l = FullSigmoidLayer(3)
