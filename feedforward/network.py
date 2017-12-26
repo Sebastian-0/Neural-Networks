@@ -24,6 +24,12 @@ class Network:
             size = l.n_nodes
 
     def train(self, X, D, epochs):
+        assert self.layers, "The network contains no layers!"
+        assert self.weight_updater, "The network has no weight updater!"
+        assert self.loss, "The network has no loss function!"
+        assert (X.shape[0] == D.shape[0]), "#input != #targets: {0} != {1}".format(X.shape[0], D.shape[0])
+        assert (D.shape[1] == self.layers[-1].n_nodes), "Dimension of network output and target data does not agree: {0} != {1}".format(self.layers[-1].n_nodes, D.shape[1])
+
         N = X.shape[1]
         self.init(N)
 
@@ -50,6 +56,12 @@ class Network:
         plt.plot(np.arange(epochs), losses)
         plt.show()
         # TODO Display loss as graph?
+
+    def predict(self, X):
+        out = X
+        for l in self.layers:
+            out = l.forward(out)
+        return out
 
     def loss_for(self, X, D):
         # Forward propagation
