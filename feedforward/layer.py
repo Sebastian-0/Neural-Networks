@@ -1,5 +1,6 @@
 
 import numpy as np
+from copy import deepcopy
 
 class Layer(object):
     def __init__(self, n_nodes):
@@ -13,7 +14,7 @@ class Layer(object):
 
     def init_weights(self, n_inputs, weight_updater):
         self.n_inputs = n_inputs
-        self.weight_updater = weight_updater
+        self.weight_updater = deepcopy(weight_updater)
         bound = 1/np.sqrt(n_inputs)  # Init with random weights, [-1 / sqrt(n), 1 / sqrt(n)]
         # self.W = np.ones((self.n_inputs, self.n_nodes))
         self.W = np.random.rand(self.n_inputs, self.n_nodes) * bound * 2 - bound
@@ -59,6 +60,18 @@ class FullSigmoidLayer(FullLayer):
     def activationDelta(self, x):
         s = self.activation(x)
         return s * (1 - s)
+
+
+class FullTanhLayer(FullLayer):
+    def __init__(self, n_nodes):
+        super(FullTanhLayer, self).__init__(n_nodes)
+
+    def activation(self, x):
+        return np.tanh(x)
+
+    def activationDelta(self, x):
+        s = self.activation(x)
+        return (1 - s*s)
 
 
 class FullLinearLayer(FullLayer):
