@@ -64,7 +64,7 @@ class Network:
 
         end = time.time()
         print("Time: %f" % (end - start))
-        
+
         return losses
         # TODO Display loss as graph?
 
