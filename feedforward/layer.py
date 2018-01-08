@@ -83,3 +83,18 @@ class FullLinearLayer(FullLayer):
 
     def activationDelta(self, x):
         return np.ones(x.shape)
+
+
+class FullReluLayer(FullLayer):
+    def __init__(self, n_nodes):
+        super(FullReluLayer, self).__init__(n_nodes)
+
+    def activation(self, x):
+        out = x.copy()
+        out[out < 0] = 0
+        return out
+
+    def activationDelta(self, x):
+        delta = np.zeros(x.shape)
+        delta[x >= 0] = 1
+        return delta
