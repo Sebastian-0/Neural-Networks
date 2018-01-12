@@ -18,12 +18,15 @@ class Network:
             l.init_weights(size, self.weight_updater)
             size = l.n_nodes
 
-    def train(self, X, D, epochs, batch_size=50):
+    def train(self, X, D, epochs, batch_size=50, validation_data=None):
         assert self.layers, "The network contains no layers!"
         assert self.weight_updater, "The network has no weight updater!"
         assert self.loss, "The network has no loss function!"
         assert (X.shape[0] == D.shape[0]), "#input != #targets: {0} != {1}".format(X.shape[0], D.shape[0])
         assert (D.shape[1] == self.layers[-1].n_nodes), "Dimension of network output and target data does not agree: {0} != {1}".format(self.layers[-1].n_nodes, D.shape[1])
+
+        if validation_data:
+            V_X, V_D = validation_data
 
         start = time.time()
 
@@ -34,7 +37,8 @@ class Network:
         I = np.arange(P)
         batch_size = min(batch_size, P)
 
-        losses = []
+        training_losses = []
+        validation_losses = []
         for iter in range(epochs):
             np.random.shuffle(I)
             for i in range(0, P, batch_size):
@@ -60,13 +64,15 @@ class Network:
                 for l in reversed(self.layers):
                     dLdy = l.backward(dLdy)
 
-            losses.append(self.loss_for(X, D))
+            training_losses.append(self.loss_for(X, D))
+            if validation_data:
+                validation_losses.append(self.loss_for(V_X, V_D))
 
         end = time.time()
         print("Time: %f" % (end - start))
 
-        return losses
-        # TODO Display loss as graph?
+        return training_losses, validation_losses
+        # TODO Display loss as graph in realtime?
 
     def predict(self, X):
         out = X

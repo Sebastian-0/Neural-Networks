@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(1)
 
-N = 200
+N = 500
 N_boundary_points = 300
 
 def rotate(X, angle_in_degrees):
@@ -20,22 +20,34 @@ def rotate(X, angle_in_degrees):
     return np.dot(X, R)
 
 
-def train_and_plot(network, epochs, batch_size, X, D, N_train):
+def train_and_plot(network, epochs, batch_size, X, D, train_fraction):
+    N_train = int(N * train_fraction)
     I = np.arange(N)
     np.random.shuffle(I)
 
-    x_test = X[I,]
-    d_test = D[I]
-    x_train = x_test[0:N_train,]
-    d_train = d_test[0:N_train]
+    # y_mean = X.mean(axis=0)
+    # y_std = X.std(axis=0)
+    # X = (X - y_mean) / y_std
 
-    losses = network.train(x_train, d_train, epochs=epochs, batch_size=batch_size)
+    x_train = X[I[0:N_train], ]
+    d_train = D[I[0:N_train]]
+    x_test = X[I[N_train:], ]
+    d_test = D[I[N_train:]]
+
+    training_losses, validation_losses = network.train(x_train, d_train,
+                                                       epochs=epochs,
+                                                       batch_size=batch_size,
+                                                       validation_data=(x_test, d_test))
 
     plt.figure(figsize=(5.3, 7.5))
     ax1 = plt.subplot(211)
     ax2 = plt.subplot(212)
 
-    ax1.plot(np.arange(epochs), losses, label="Loss (LSE)")
+    ax1.plot(np.arange(epochs), training_losses, label="Training Loss")
+    ax1.plot(np.arange(epochs), validation_losses, label="Validation Loss")
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Error")
+    ax1.legend()
 
     x_min, x_max = x_test[:, 0].min() - .2, x_test[:, 0].max() + .2
     y_min, y_max = x_test[:, 1].min() - .2, x_test[:, 1].max() + .2
@@ -70,13 +82,12 @@ for i in range(0, N):
         D[i] = 0
     else:
         D[i] = 1
-
 X = rotate(X, 30)
 
 network = Network(CrossEntropyLoss(), MomentumUpdater(learning_rate=0.5))
 network.add_layer(FullSigmoidLayer(1))
 
-train_and_plot(network, epochs=500, batch_size=50, X=X, D=D, N_train=100)
+train_and_plot(network, epochs=500, batch_size=50, X=X, D=D, train_fraction=0.5)
 
 
 # Ex 2. Uniform Checkerboard
@@ -105,7 +116,7 @@ network = Network(CrossEntropyLoss(), MomentumUpdater(learning_rate=0.5))
 network.add_layer(FullSigmoidLayer(5))
 network.add_layer(FullSigmoidLayer(1))
 
-train_and_plot(network, epochs=1000, batch_size=50, X=X, D=D, N_train=800)
+train_and_plot(network, epochs=1000, batch_size=50, X=X, D=D, train_fraction=0.75)
 
 
 # Ex 3. Spiral
@@ -115,17 +126,14 @@ t = np.arange(N//2).reshape((N//2,1)) / (N//2) + 0.1
 x = np.concatenate((np.cos(t*np.pi*spd)*t*scl, np.cos(t*np.pi*spd + np.pi)*t*scl), axis=0)
 y = np.concatenate((np.sin(t*np.pi*spd)*t*scl, np.sin(t*np.pi*spd + np.pi)*t*scl), axis=0)
 
-print(x.shape)
-print(y.shape)
-
 X = np.concatenate((x, y), axis=1)
 D = np.concatenate((np.zeros((N//2, 1)), np.ones((N//2, 1))))
 
-network = Network(CrossEntropyLoss(), MomentumUpdater(learning_rate=0.08))
+network = Network(CrossEntropyLoss(), MomentumUpdater(learning_rate=0.03))
 network.add_layer(FullSigmoidLayer(100))
 network.add_layer(FullSigmoidLayer(1))
 
-train_and_plot(network, epochs=2000, batch_size=50, X=X, D=D, N_train=200)
+train_and_plot(network, epochs=2000, batch_size=50, X=X, D=D, train_fraction=0.75)
 
 
 plt.show()
