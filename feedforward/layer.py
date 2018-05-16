@@ -11,10 +11,12 @@ class Layer(object):
         self.X = None               # Previous input
         self.A = None               # Previous activation
         self.weight_updater = None
+        self.regularizer = None
 
-    def init_weights(self, n_inputs, weight_updater):
+    def init_weights(self, n_inputs, weight_updater, regularizer):
         self.n_inputs = n_inputs
         self.weight_updater = deepcopy(weight_updater)
+        self.regularizer = regularizer
         bound = 1/np.sqrt(n_inputs)  # Init with random weights, [-1 / sqrt(n), 1 / sqrt(n)]
         # self.W = np.ones((self.n_inputs, self.n_nodes))
         self.W = np.random.rand(self.n_inputs, self.n_nodes) * bound * 2 - bound
@@ -44,7 +46,7 @@ class FullLayer(Layer):
 
     def backward(self, dLdy):
         dLdh = (dLdy*self.activationDelta(self.A)).dot(np.transpose(self.W))
-        dLdW = np.transpose(self.X).dot(dLdy*self.activationDelta(self.A))
+        dLdW = np.transpose(self.X).dot(dLdy*self.activationDelta(self.A)) + self.regularizer.backward(self.W)
         dLdb = np.sum(dLdy*self.activationDelta(self.A), axis=0)  # TODO was here with bias
         self.weight_updater.update(self.W, self.b, dLdW, dLdb)
         return dLdh

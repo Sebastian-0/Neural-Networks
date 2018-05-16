@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+from feedforward.regularizer import L2
+
 class Network:
-    def __init__(self, loss, weight_updater):
+    def __init__(self, loss, weight_updater, regularizer=L2(0)):
         self.loss = loss
         self.weight_updater = weight_updater
+        self.regularizer = regularizer
         self.layers = []
 
     def add_layer(self, layer):
@@ -13,9 +16,9 @@ class Network:
 
     def init(self, input_dimension):
         size = self.layers[0].n_nodes
-        self.layers[0].init_weights(input_dimension, self.weight_updater)
+        self.layers[0].init_weights(input_dimension, self.weight_updater, self.regularizer)
         for l in self.layers[1:]:
-            l.init_weights(size, self.weight_updater)
+            l.init_weights(size, self.weight_updater, self.regularizer)
             size = l.n_nodes
 
     def train(self, X, D, epochs, batch_size=50, validation_data=None):
@@ -82,8 +85,10 @@ class Network:
 
     def loss_for(self, X, D):
         # Forward propagation
+        regularization_loss = 0
         out = X
         for l in self.layers:
             out = l.forward(out)
+            regularization_loss += self.regularizer.loss(l.W)
 
-        return self.loss.loss(out, D)
+        return self.loss.loss(out, D) + regularization_loss

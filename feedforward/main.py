@@ -23,6 +23,8 @@ X = np.array([0, 0,
               3, 3]).reshape((4, 2))
 D = np.array([0, 1, 2, 3]).reshape(4, 1)
 
+print(X)
+
 # y = 2x + 5 curve
 # X = np.array([0,
 #               1,
